@@ -87,7 +87,6 @@ fi
 
 #if ! [ -e index.php -a -e app/AppKernel.php ]; then
 #        echo >&2 "Mautic not found in $(pwd) - copying now..."
-
         #if [ "$(ls -A)" ]; then
         #        echo >&2 "WARNING: $(pwd) is not empty - press Ctrl+C now if this is an error!"
         #        ( set -x; ls -A; sleep 10 )
@@ -116,7 +115,7 @@ if ! [ -e app/config/local.php ]; then
         php /makeconfig.php
 
         # Make sure our web user owns the config file if it exists
-        chown www-data:www-data app/config/local.php
+        chown www-data:www-data /home/site/wwwroot/app/config/local.php
         mkdir -p /home/site/wwwroot/app/logs
         chown www-data:www-data /home/site/wwwroot/app/logs
 fi
@@ -145,21 +144,21 @@ echo >&2 "======================================================================
 "$@" &
 MAINPID=$!
 
-shut_down() {
-    if [[ "$MAUTIC_RUN_CRON_JOBS" == "true" ]]; then
-        kill -TERM $CRONPID || echo 'Cron not killed. Already gone.'
-        kill -TERM $CRONLOGPID || echo 'Cron log not killed. Already gone.'
-    fi
-    kill -TERM $MAINPID || echo 'Main process not killed. Already gone.'
-}
-trap 'shut_down;' TERM INT
+# shut_down() {
+#     if [[ "$MAUTIC_RUN_CRON_JOBS" == "true" ]]; then
+#         kill -TERM $CRONPID || echo 'Cron not killed. Already gone.'
+#         kill -TERM $CRONLOGPID || echo 'Cron log not killed. Already gone.'
+#     fi
+#     kill -TERM $MAINPID || echo 'Main process not killed. Already gone.'
+# }
+#trap 'shut_down;' TERM INT
 
 # wait until all processes end (wait returns 0 retcode)
-while :; do
-    if wait; then
-        break
-    fi
-done
+#while :; do
+#    if wait; then
+#        break
+#    fi
+#done
 
 echo 'Executing Azure Entrypoint'
 source /bin/init_container.sh
