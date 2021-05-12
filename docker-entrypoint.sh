@@ -161,4 +161,6 @@ while :; do
     fi
 done
 
+echo 'Executing Azure Entrypoint'
 source /bin/init_container.sh
+echo 'Finished Executing Azure Entrypoint'
