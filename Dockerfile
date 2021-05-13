@@ -86,7 +86,7 @@ RUN curl -o mautic.zip -SL https://github.com/mautic/mautic/releases/download/${
 COPY docker-entrypoint.sh /entrypoint.sh
 COPY makeconfig.php /makeconfig.php
 COPY makedb.php /makedb.php
-COPY mautic.crontab /home/mautic.crontab
+COPY mautic.crontab /mautic.crontab
 #RUN chmod 644 /etc/cron.d/mautic
 #RUN tar cf - --one-file-system -C /usr/src/mautic . | tar xf -
 

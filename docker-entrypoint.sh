@@ -92,10 +92,16 @@ if [[ "$MAUTIC_RUN_CRON_JOBS" == "true" ]]; then
     cron -f &
     CRONPID=$!
 
+    echo "Checking if mautic.crontab exists in /home"
+    if ! [ -e /home/mautic.crontab ]; then
+        echo "Moving mautic.crontab file to /home/mautic.crontab"
+        cp /mautic.crontab /home/mautic.crontab
+    fi
     #move the mautic cron job file to /etc/cron.d
     echo "Moving mautic.crontab file to /etc/cron.d/mautic"
     cp /home/mautic.crontab /etc/cron.d/mautic
     chmod 644 /etc/cron.d/mautic
+    
 else
     echo "Not running cron as requested."
 fi
