@@ -1,4 +1,4 @@
-FROM appsvc/php:7.4-apache_20200522.6
+FROM mcr.microsoft.com/appsvc/php:7.4-apache_20210512.1
 
 # Install PHP extensions
 RUN apt-get update && apt-get install --no-install-recommends -y \
