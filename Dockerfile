@@ -88,7 +88,7 @@ COPY makeconfig.php /makeconfig.php
 COPY makedb.php /makedb.php
 COPY mautic.crontab /home/mautic.crontab
 #RUN chmod 644 /etc/cron.d/mautic
-RUN tar cf - --one-file-system -C /usr/src/mautic . | tar xf -
+#RUN tar cf - --one-file-system -C /usr/src/mautic . | tar xf -
 
 # Enable Apache Rewrite Module
 RUN a2enmod rewrite

@@ -21,9 +21,9 @@ if [ -n "$MYSQL_PORT_3306_TCP" ]; then
                         export MAUTIC_DB_PASSWORD="$MYSQL_ENV_MYSQL_ROOT_PASSWORD"
                 fi
         else
-                echo >&2 "warning: both MAUTIC_DB_HOST and MYSQL_PORT_3306_TCP found"
-                echo >&2 "  Connecting to MAUTIC_DB_HOST ($MAUTIC_DB_HOST)"
-                echo >&2 "  instead of the linked mysql container"
+                echo "warning: both MAUTIC_DB_HOST and MYSQL_PORT_3306_TCP found"
+                echo "  Connecting to MAUTIC_DB_HOST ($MAUTIC_DB_HOST)"
+                echo "  instead of the linked mysql container"
         fi
 fi
 
@@ -44,80 +44,42 @@ if [ -z "$MAUTIC_DB_PASSWORD" ]; then
         exit 1
 fi
 
-#ENABLES HUBSPOT CRON
-if [ -n "$MAUTIC_CRON_HUBSPOT" ]; then
-        echo >&2 "CRON: Activating Hubspot"
-        echo "10,40 * * * *     www-data   php /home/site/wwwroot/app/console mautic:integration:fetchleads --integration=Hubspot > /var/log/cron.pipe 2>&1" >> /etc/cron.d/mautic
-        echo "15,45 * * * *     www-data   php /home/site/wwwroot/app/console mautic:integration:pushactivity --integration=Hubspot > /var/log/cron.pipe 2>&1" >> /etc/cron.d/mautic
-fi
 
-#ENABLES SALESFORCE CRON
-if [ -n "$MAUTIC_CRON_SALESFORCE" ]; then
-        echo >&2 "CRON: Activating Salesforce"
-        echo "10,40 * * * *     www-data   php /home/site/wwwroot/app/console mautic:integration:fetchleads --integration=Salesforce > /var/log/cron.pipe 2>&1" >> /etc/cron.d/mautic
-        echo "12,42 * * * *     www-data   php /home/site/wwwroot/app/console mautic:integration:pushactivity --integration=Salesforce > /var/log/cron.pipe 2>&1" >> /etc/cron.d/mautic
-        echo "14,44 * * * *     www-data   php /home/site/wwwroot/app/console mautic:integration:pushleadactivity --integration=Salesforce > /var/log/cron.pipe 2>&1" >> /etc/cron.d/mautic
-        echo "16,46 * * * *     www-data   php /home/site/wwwroot/app/console mautic:integration:synccontacts --integration=Salesforce > /var/log/cron.pipe 2>&1" >> /etc/cron.d/mautic
-fi
-
-# #ENABLES SUGARCRM CRON
-# if [ -n "$MAUTIC_CRON_SUGARCRM" ]; then
-#         echo >&2 "CRON: Activating SugarCRM"
-#         echo "10,40 * * * *     www-data   php /home/site/wwwroot/app/console mautic:integration:fetchleads --fetch-all --integration=Sugarcrm > /var/log/cron.pipe 2>&1" >> /etc/cron.d/mautic
-# fi
-
-# #ENABLES PIPEDRIVE CRON
-# if [ -n "$MAUTIC_CRON_PIPEDRIVE" ]; then
-#         echo >&2 "CRON: Activating Pipedrive"
-#         echo "10,40 * * * *     www-data   php /home/site/wwwroot/app/console mautic:integration:pipedrive:fetch > /var/log/cron.pipe 2>&1" >> /etc/cron.d/mautic
-#         echo "15,45 * * * *     www-data   php /home/site/wwwroot/app/console mautic:integration:pipedrive:push > /var/log/cron.pipe 2>&1" >> /etc/cron.d/mautic
-# fi
-
-# #ENABLES ZOHO CRON
-# if [ -n "$MAUTIC_CRON_ZOHO" ]; then
-#         echo >&2 "CRON: Activating ZohoCRM"
-#         echo "10,40 * * * *     www-data   php /home/site/wwwroot/app/console mautic:integration:fetchleads --integration=Zoho > /var/log/cron.pipe 2>&1" >> /etc/cron.d/mautic
-# fi
-
-# #ENABLES DYNAMICS CRON
-# if [ -n "$MAUTIC_CRON_DYNAMICS" ]; then
-#         echo >&2 "CRON: Activating DynamicsCRM"
-#         echo "10,40 * * * *     www-data   php /home/site/wwwroot/app/console mautic:integration:fetchleads -i Dynamics > /var/log/cron.pipe 2>&1" >> /etc/cron.d/mautic
-# fi
-
-#if ! [ -e index.php -a -e app/AppKernel.php ]; then
-#        echo >&2 "Mautic not found in $(pwd) - copying now..."
-        #if [ "$(ls -A)" ]; then
+if ! [ -e index.php -a -e app/AppKernel.php ]; then
+       echo "Mautic not found in $pwd - copying now..."
+        # if [ "$(ls -A)" ]; then
         #        echo >&2 "WARNING: $(pwd) is not empty - press Ctrl+C now if this is an error!"
         #        ( set -x; ls -A; sleep 10 )
-        #fi
+        # fi
 
-#        tar cf - --one-file-system -C /usr/src/mautic . | tar xf -
+       tar cf - --one-file-system -C /usr/src/mautic . | tar xf -
 
-#        echo >&2 "Complete! Mautic has been successfully copied to $(pwd)"
-#fi
+       echo "Complete! Mautic has been successfully copied to $pwd"
+fi
 
 # Ensure the MySQL Database is created
 php /makedb.php "$MAUTIC_DB_HOST" "$MAUTIC_DB_USER" "$MAUTIC_DB_PASSWORD" "$MAUTIC_DB_NAME"
 
-echo >&2 "========================================================================"
-echo >&2
-echo >&2 "This server is now configured to run Mautic!"
-echo >&2 "The following information will be prefilled into the installer (keep password field empty):"
-echo >&2 "Host Name: $MAUTIC_DB_HOST"
-echo >&2 "Database Name: $MAUTIC_DB_NAME"
-echo >&2 "Database Username: $MAUTIC_DB_USER"
-echo >&2 "Database Password: $MAUTIC_DB_PASSWORD"
+echo "========================================================================"
+echo ""
+echo "This server is now configured to run Mautic!"
+echo "The following information will be prefilled into the installer (keep password field empty):"
+echo "Host Name: $MAUTIC_DB_HOST"
+echo "Database Name: $MAUTIC_DB_NAME"
+echo "Database Username: $MAUTIC_DB_USER"
+echo "Database Password: $MAUTIC_DB_PASSWORD"
 
 
 # Write the database connection to the config so the installer prefills it
 if ! [ -e app/config/local.php ]; then
+        echo "Config not found in $pwd/app/config - creating now..."
         php /makeconfig.php
 
         # Make sure our web user owns the config file if it exists
         chown www-data:www-data /home/site/wwwroot/app/config/local.php
         mkdir -p /home/site/wwwroot/app/logs
         chown www-data:www-data /home/site/wwwroot/app/logs
+        echo "Complete! Config has been created"
 fi
 
 if [[ "$MAUTIC_RUN_CRON_JOBS" == "true" ]]; then
@@ -131,15 +93,15 @@ if [[ "$MAUTIC_RUN_CRON_JOBS" == "true" ]]; then
     CRONPID=$!
 
     #move the mautic cron job file to /etc/cron.d
-    echo 'Moving mautic.crontab file to /etc/cron.d/mautic'
+    echo "Moving mautic.crontab file to /etc/cron.d/mautic"
     cp /home/mautic.crontab /etc/cron.d/mautic
     chmod 644 /etc/cron.d/mautic
 else
-    echo >&2 "Not running cron as requested."
+    echo "Not running cron as requested."
 fi
 
-echo >&2
-echo >&2 "========================================================================"
+echo ""
+echo "========================================================================"
 
 #"$@" &
 #MAINPID=$!
@@ -160,6 +122,6 @@ echo >&2 "======================================================================
 #    fi
 #done
 
-echo 'Executing Azure Entrypoint'
+echo "Executing Azure Entrypoint"
 source /bin/init_container.sh
-echo 'Finished Executing Azure Entrypoint'
+echo "Finished Executing Azure Entrypoint"
