@@ -47,10 +47,6 @@ fi
 
 if ! [ -e index.php -a -e app/AppKernel.php ]; then
        echo "Mautic not found in $pwd - copying now..."
-        # if [ "$(ls -A)" ]; then
-        #        echo >&2 "WARNING: $(pwd) is not empty - press Ctrl+C now if this is an error!"
-        #        ( set -x; ls -A; sleep 10 )
-        # fi
 
        tar cf - --one-file-system -C /usr/src/mautic . | tar xf -
 
@@ -96,6 +92,7 @@ if [[ "$MAUTIC_RUN_CRON_JOBS" == "true" ]]; then
     if ! [ -e /home/mautic.crontab ]; then
         echo "Moving mautic.crontab file to /home/mautic.crontab"
         cp /mautic.crontab /home/mautic.crontab
+        chmod 644 /home/mautic.crontab
     fi
     #move the mautic cron job file to /etc/cron.d
     echo "Moving mautic.crontab file to /etc/cron.d/mautic"
@@ -106,20 +103,21 @@ else
     echo "Not running cron as requested."
 fi
 
-echo ""
 echo "========================================================================"
 
-#"$@" &
-#MAINPID=$!
+"$@" &
+MAINPID=$!
+echo "Jonas!!!"
 
-# shut_down() {
-#     if [[ "$MAUTIC_RUN_CRON_JOBS" == "true" ]]; then
-#         kill -TERM $CRONPID || echo 'Cron not killed. Already gone.'
-#         kill -TERM $CRONLOGPID || echo 'Cron log not killed. Already gone.'
-#     fi
-#     kill -TERM $MAINPID || echo 'Main process not killed. Already gone.'
-# }
-#trap 'shut_down;' TERM INT
+ shut_down() {
+     echo "shutting down!!!!!!!!"
+     if [[ "$MAUTIC_RUN_CRON_JOBS" == "true" ]]; then
+         kill -TERM $CRONPID || echo 'Cron not killed. Already gone.'
+         kill -TERM $CRONLOGPID || echo 'Cron log not killed. Already gone.'
+     fi
+     kill -TERM $MAINPID || echo 'Main process not killed. Already gone.'
+ }
+trap 'shut_down;' TERM INT
 
 # wait until all processes end (wait returns 0 retcode)
 #while :; do
@@ -130,4 +128,3 @@ echo "========================================================================"
 
 echo "Executing Azure Entrypoint"
 source /bin/init_container.sh
-echo "Finished Executing Azure Entrypoint"

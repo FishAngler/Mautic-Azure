@@ -87,7 +87,7 @@ COPY docker-entrypoint.sh /entrypoint.sh
 COPY makeconfig.php /makeconfig.php
 COPY makedb.php /makedb.php
 COPY mautic.crontab /mautic.crontab
-#RUN chmod 644 /etc/cron.d/mautic
+RUN chmod 644 /mautic.crontab
 #RUN tar cf - --one-file-system -C /usr/src/mautic . | tar xf -
 
 # Enable Apache Rewrite Module
@@ -97,4 +97,4 @@ RUN a2enmod rewrite
 RUN ["chmod", "+x", "/entrypoint.sh"]
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["apache2-foreground"]
+#CMD ["apache2-foreground"]
